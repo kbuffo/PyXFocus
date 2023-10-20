@@ -2,7 +2,7 @@
 import numpy as np
 import PyXFocus.surfacesf as surf
 import PyXFocus.zernsurf as zern
-import PyXFocus.woltsurf as wolt
+# import PyXFocus.woltsurf as wolt
 import PyXFocus.transformations as tran
 from PyXFocus.analyses import analyticYPlane, analyticXPlane, analyticImagePlane
 import PyXFocus.conicsolve as con

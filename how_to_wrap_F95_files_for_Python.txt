@@ -1,0 +1,98 @@
+PURPOSE: The PyXFocus repository (repo) contains Fortran files (.f95) which it relies on to do a lot of the raytracing. The purpose of this document is show how to setup your PC to allow Python to import these files for use. I am running Windows 10 and use Anaconda for Python and in the steps below I show how to configure your PC to import Fortran files in the PyXFocus directory.
+
+############################## STEP 1: INSTALL MinGW ##############################
+MinGW allows you to compile C, C++, and Fortran files for Windows. You need to install it since any Fortran files you use in the repo will need to be compiled in order to work. Follow the steps given in the YouTube video which is linked below to install MinGW and add it to the system Path.
+
+https://www.youtube.com/watch?v=FEeFG9OR-QU
+
+##########################################################################################
+
+############################## STEP 2: ADD CONFIG FILE TO ANACONDA3 ##############################
+Now that we have MinGW installed and added to the system Path, Anaconda may unfortunately not recognize that the compiler is present when we try to compile our Fortran files. Thus, we can create a .cfg file that specifies that we want to use MinGW as our compiler. To do this, navigate to the directory:
+
+C:\...\Anaconda3\Lib\distutils
+
+In this directory create a new text document. In the text document, write:
+
+[build]
+compiler=mingw32
+
+Save the text document as distutils.cfg . Then, open the Anaconda prompt and run:
+
+conda install libpython
+conda install -c msys2 m2w64-toolchain
+
+These instructions for STEP 2 come from the following Stack Exchange post:
+
+https://superuser.com/questions/1399738/pip-error-no-fortran-compiler-found-but-compiler-already-present
+
+##########################################################################################
+
+############################## STEP 3: UPDATE MICROSOFT VISUAL STUDIO ##############################
+Even though we have all the tools to now compile and wrap all of our Fortran files, if we try to do that on a Windows machine using F2PY which is built in to Numpy, we may get the following error:
+
+'error: Microsoft Visual C++ 14.0 or greater is required. Get it with "Microsoft C++ Build Tools": https://visualstudio.microsoft.com/visual-cpp-build-tools/'
+
+This is basically telling us that we need to update our installation of Mircosoft Visual Studio. You can first check to see if you have Visual Studio installed by doing a Windows search for "Visual Studio Installer". If an app appears with that name, click on it, and the first window that appears will show what version of Visual Studio you have.
+
+----------------------- If you have Visual Studio Installer already installed: -----------------------
+ 
+From the first window that appears when you launch Visual Studio Installer, select "Modify". Under "Workloads", scroll down to the group "Desktop & Mobile" and find "Desktop development with C++". Click this box and make sure it is checked. On the right side under "Installation details" expand the "Optional" tab and make sure the following are checked:
+
+Windows 11 SDK
+C++ x64/x86 build tools
+
+At the bottom right of the window, click "Modify" to install these components and update your install of Visual Studio.
+------------------------------------------------------------------------------------------------------------------------------------
+
+----------------------- If you do not have Visual Studio Installer already installed: -----------------------
+
+If you do not have Visual Studio installed, you can download it from:
+
+https://visualstudio.microsoft.com/visual-cpp-build-tools/
+
+Once you run the installer you downloaded, you will be brought to a window that says "Workloads Individual components Language packs Installation locations" at the top. On this screen, make sure Workloads is selected. Scroll down to the group "Desktop & Mobile" and find "Desktop development with C++". Click this box and make sure it is checked. On the right side under "Installation details" expand the "Optional" tab and make sure the following are checked:
+
+Windows 11 SDK
+C++ x64/x86 build tools
+
+At the bottom right of the window, click "Install" to install these components and update your install of Visual Studio.
+------------------------------------------------------------------------------------------------------------------------------------
+
+Once Visual Studio Installer is finished installing the necessary components, you can close the window. These instructions for STEP 3 come from the following Stack Overflow post:
+
+https://stackoverflow.com/questions/64261546/how-to-solve-error-microsoft-visual-c-14-0-or-greater-is-required-when-inst
+
+
+############################## STEP 4: WRAPPING FORTRAN FILES WITH F2PY ##############################
+Below is a list of all the Fortran files in the PyXFocus repository, including which have been wrapped and can be imported for use in Python, assuming you followed the steps above. 
+
+FILES:
+bSplineEv.f95 -> wrapped
+PytranCode.f95~
+quartic.f95~
+reconstruct.f95 -> wrapped
+specialFunctions.f95 -> wrapped
+specialFunctions.f95~
+surfaces.f95
+surfaces.f95~
+surfacesf.f95 -> wrapped
+surfacesf.f95~
+transformationsf.f95 -> wrapped
+transformationsf.f95~
+woltsurf.f95
+woltsurf.f95~
+zernsurf.f95 -> wrapped
+zernsurf.f95~
+
+I used F2PY (which is built into Numpy) to generate signature wrapper files for each Fortran file in the form of a Dynamic Linked Library (.dll) file. For example, to wrap bSplineEv.f95 I open the Anaconda Powershell Prompt, navigate to the file location, and run "f2py -c bSplineEv.f95 -m bSplineEv". This will generate some directories and files with the following structure:
+
+-> bSplineEv
+	-> .libs
+		libbSplineE.LCECGQEYFSOIV4QMOQ5WIQ63Q4OVEXNT.gfortran-win_amd64.dll
+bSplineEv.cp38-win_amd64.pyd
+
+I then move the .dll and .pyd files into the same directory as bSpline.f95 (the bSplineEV and .libs directories can be deleted after the .dll file is moved). Once this is done, you should be able to import bSpline.f95 using the normal Python call: "import bSpline" or "import PyXFocus.bSpline". Note that not all the .f95 files listed above were wrapped. That is because some are just backup files (denoted by ~ at the end of the file extension), and others couldn't be wrapped because the source Fortran files had errors when being compiled. For information on how this wrapping process works, check out:
+
+https://numpy.org/doc/stable/f2py/f2py.getting-started.html#the-quick-way
+##########################################################################################

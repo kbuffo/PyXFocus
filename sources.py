@@ -15,7 +15,7 @@ Ray Parameters:
 '''
 
 import numpy as np
-
+from math import radians, degrees
 
 def pointsource(ang, num):
     '''

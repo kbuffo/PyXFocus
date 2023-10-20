@@ -10,7 +10,7 @@ import utilities.imaging.fitting as fit
 import utilities.imaging.zernikemod as zern
 import PyXFocus.reconstruct as reconstruct
 import astropy.io.fits as pyfits
-import PyXFocus.specialfunctions as special
+import PyXFocus.specialFunctions as special
 #from PyXFocus.surfaces import focusI
 
 def centroid(rays,weights=None):
@@ -203,7 +203,7 @@ def interpolateVec(rays,I,Nx,Ny,xr=None,yr=None,method='linear',\
     #Allow for arbitrary vector to be interpolated over x,y coordinates
     if interpVec is None:
         interpVec = rays[I]
- 
+
     #Set up new grid
     if xr is None:
         xr=[x.min(),x.max()]
@@ -271,7 +271,7 @@ def OPDtoLegendreP(x,y,opd,xo,yo,xwidth=1.,ywidth=1.):
     #gx = np.polynomial.legendre.legval2d(x/xwidth,y/ywidth,cy)/ywidth
     gy = np.polynomial.legendre.legval2d(-y/ywidth,x/xwidth,cx)/ywidth
     gx = np.polynomial.legendre.legval2d(-y/ywidth,x/xwidth,cy)/xwidth
-    
+
     return coeff,xorder,yorder,gx,gy
 
 def OPDtoZernike(x,y,opd,N,xwidth=1.,ywidth=1.):
@@ -410,14 +410,14 @@ def radialGrad(x,y,hubscale,yaw,hubdist):
     """
     #Rotate coordinate system based on yaw angle
     x2,y2 = x*np.cos(yaw)+y*np.sin(yaw),-x*np.sin(yaw)+y*np.cos(yaw)
-    
+
     #Shift y2 axis by hubdistance
     y2 = y+hubdist
 
     #Compute rho and theta
     rho = np.sqrt(x2**2+y2**2)
     theta = np.arctan2(-x2,y2)
-    
+
     #Compute derivatives
     gx = hubscale * (np.cos(theta)/rho)
     gy = -hubscale * (np.sin(theta)/rho)
@@ -444,9 +444,3 @@ def sellmeier(wave,B,C):
     n = np.sqrt(n2)
 
     return n
-
-
-
-
-
-    
